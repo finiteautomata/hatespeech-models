@@ -18,8 +18,10 @@ class Comment(EmbeddedDocument):
 class Article(DynamicDocument):
     tweet_id = LongField(required=True, unique=True)
     text = StringField(required=True, max_length=500)
-    created_at = DateTimeField(required=True)
+    title = StringField(required=True, max_length=200)
+    user = StringField(max_length=40)
     body = StringField(required=True)
+    created_at = DateTimeField(required=True)
     comments = ListField(EmbeddedDocumentField(Comment))
 
     @classmethod
@@ -27,8 +29,10 @@ class Article(DynamicDocument):
         article = cls(
             tweet_id=tweet["_id"],
             created_at=tweet["created_at"],
+            user=tweet["user"]["screen_name"],
             text=tweet["text"],
-            body=tweet["article"],
+            title=tweet["article"]["title"],
+            body=tweet["article"]["body"],
         )
 
         article.comments = []
@@ -43,8 +47,9 @@ class Article(DynamicDocument):
 
     meta = {
         'indexes': [
+            "user",
             {
-                'fields': ['$body', "$text"],
+                'fields': ['$body', '$title'],
                 'default_language': 'spanish',
             },
         ]
