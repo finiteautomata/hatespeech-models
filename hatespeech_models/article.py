@@ -45,6 +45,18 @@ class Article(DynamicDocument):
 
         return article
 
+    def __repr__(self):
+        return f"""{self.tweet_id} - {self.user}
+{self.title}
+
+({len(self.comments)} comentarios)
+Tweet:
+{self.text}
+    """
+
+    def __str__(self):
+        return self.__repr__()
+
     meta = {
         'indexes': [
             "user",
