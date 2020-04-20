@@ -8,12 +8,14 @@ from mongoengine import (
     LongField,
     BooleanField,
     EmbeddedDocumentField,
+    FloatField,
 )
 
 
 class Comment(EmbeddedDocument):
     tweet_id = LongField(required=True)
     text = StringField(required=True)
+    hateful_value = FloatField(min_value=0.0, max_value=1.0)
 
 class Article(DynamicDocument):
     tweet_id = LongField(required=True, unique=True)
@@ -59,6 +61,7 @@ Tweet:
 
     meta = {
         'indexes': [
+            "comments.tweet_id",
             "user",
             {
                 'fields': ['$body', '$title'],
