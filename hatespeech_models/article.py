@@ -18,6 +18,13 @@ class Comment(EmbeddedDocument):
     user_id = LongField(required=True)
     hateful_value = FloatField(min_value=0.0, max_value=1.0)
 
+    def __repr__(self):
+        ret = ""
+        if self.hateful_value:
+            ret += f"({self.hateful_value:.2f}) "
+        ret += self.text
+        return ret
+
 class Article(DynamicDocument):
     tweet_id = LongField(required=True, unique=True)
     text = StringField(required=True, max_length=500)
