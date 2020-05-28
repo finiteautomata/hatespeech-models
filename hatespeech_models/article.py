@@ -64,6 +64,7 @@ Tweet:
     meta = {
         'indexes': [
             "comments.tweet_id",
+            "created_at",
             "user",
             {
                 'fields': ['$body', '$title'],
