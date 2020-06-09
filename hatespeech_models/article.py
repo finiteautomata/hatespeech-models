@@ -9,6 +9,7 @@ from mongoengine import (
     BooleanField,
     EmbeddedDocumentField,
     FloatField,
+    signals,
 )
 
 
@@ -28,6 +29,7 @@ class Comment(EmbeddedDocument):
 class Article(DynamicDocument):
     tweet_id = LongField(required=True, unique=True)
     text = StringField(required=True, max_length=500)
+    slug = StringField(required=True, max_length=50)
     title = StringField(required=True, max_length=200)
     user = StringField(max_length=40)
     body = StringField(required=True)
@@ -72,6 +74,7 @@ Tweet:
         'indexes': [
             "comments.tweet_id",
             "created_at",
+            "slug",
             "user",
             {
                 'fields': ['$body', '$title'],
