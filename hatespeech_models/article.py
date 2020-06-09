@@ -2,6 +2,7 @@ import datetime
 from mongoengine import (
     DynamicDocument,
     EmbeddedDocument,
+    DoesNotExist,
     StringField,
     ListField,
     DateTimeField,
@@ -11,6 +12,7 @@ from mongoengine import (
     FloatField,
     signals,
 )
+from slugify import slugify
 
 
 class Comment(EmbeddedDocument):
@@ -29,7 +31,7 @@ class Comment(EmbeddedDocument):
 class Article(DynamicDocument):
     tweet_id = LongField(required=True, unique=True)
     text = StringField(required=True, max_length=500)
-    slug = StringField(required=True, max_length=50)
+    slug = StringField(required=True, max_length=60, unique=True)
     title = StringField(required=True, max_length=200)
     user = StringField(max_length=40)
     body = StringField(required=True)
@@ -82,3 +84,32 @@ Tweet:
             },
         ]
     }
+
+
+def article_slugify(article):
+    article_slug = slugify(article.title)[:50]
+    original_slug = article_slug
+
+    try:
+        another_article = Article.objects.get(slug=article_slug)
+
+        count = 2
+        article_slug = f"{original_slug}_{count}"
+
+        while True:
+            """
+            Repeat until fails
+            """
+            another_article = Article.objects.get(slug=article_slug)
+            count += 1
+            article_slug = f"{original_slug}_{count}"
+
+    except DoesNotExist:
+        # It is ok
+        return article_slug
+
+
+def set_slug(sender, document):
+    document.slug = article_slugify(document)
+
+signals.pre_save.connect(set_slug, sender=Article)
