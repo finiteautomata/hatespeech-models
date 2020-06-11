@@ -13,7 +13,24 @@ def comment():
         tweet_id=comment_id,
         text=f"Comment no {comment_id}",
         user_id=1,
+        created_at=datetime.now(),
     )
+
+tweet_id = 0
+def comment_tweet(text=None):
+    global tweet_id
+    tweet_id += 1
+
+    text = text or f"Comment {tweet_id}"
+
+    return {
+        "_id": tweet_id,
+        "text": text,
+        "user": user(),
+        "created_at": datetime.now(),
+        "retweet_count": 0,
+    }
+
 
 user_id = 0
 def user(screen_name=None):
@@ -87,13 +104,15 @@ def test_create_with_class_method():
         "created_at": datetime.utcnow(),
         "user": creator,
         "replies" : [
-            {"_id": 1, "text": "Aguante Python3", "user": commenter_1},
-            {"_id": 1, "text": "Aguante Node", "user": commenter_2},
+            comment_tweet(text="Aguante Python 3"),
+            comment_tweet(text="Aguante NodeJS"),
         ]
     }
     art = Article.from_tweet(tweet)
 
     art.save()
+
+    assert len(art.comments) == 2
 
 def test_create_article_with_slug():
     art = Article(

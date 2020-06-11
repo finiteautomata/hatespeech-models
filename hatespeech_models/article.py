@@ -19,6 +19,7 @@ class Comment(EmbeddedDocument):
     tweet_id = LongField(required=True)
     text = StringField(required=True)
     user_id = LongField(required=True)
+    created_at = DateTimeField(required=True)
     hateful_value = FloatField(min_value=0.0, max_value=1.0)
 
     def __repr__(self):
@@ -55,11 +56,15 @@ class Article(DynamicDocument):
         article.comments = []
 
         for reply in tweet["replies"]:
-            article.comments.append(Comment(
+            comment = Comment(
                 tweet_id=reply["_id"],
                 text=reply["text"],
                 user_id=reply["user"]["id"],
-            ))
+                created_at=reply["created_at"],
+            )
+
+            comment.retweet_count = reply["retweet_count"]
+            article.comments.append(comment)
 
         return article
 
