@@ -53,6 +53,8 @@ def test_create_article():
         text = "This is a tweet",
         title = "This is a title",
         body = "This is a detailed explanation of the news",
+        url = "http://clarin.com/url",
+        html = "algodehtml",
         created_at=datetime.utcnow() - timedelta(days=1),
     )
     comments = [comment(), comment()]
@@ -79,6 +81,8 @@ def test_create_with_class_method():
         "article": {
             "title": "Python 2 ya no tiene mantenimiento",
             "body": "Desde el 1ro de Enero de 2020, Python 2 ya no tiene mantenimiento",
+            "html": "Algo de html",
+            "url": "unaurl"
         },
         "created_at": datetime.utcnow(),
         "user": creator,
@@ -97,6 +101,8 @@ def test_create_article_with_slug():
         text = "This is a tweet",
         title = "This is a unique title",
         body = "This is a detailed explanation of the news",
+        url = "http://clarin.com/url",
+        html = "algodehtml",
         created_at=datetime.utcnow() - timedelta(days=1),
     )
     comments = [comment(), comment()]
@@ -114,12 +120,16 @@ def test_create_article_with_differents_slug():
         text = "This is a tweet",
         title = "My title",
         body = "This is a detailed explanation of the news",
+        url = "http://clarin.com/url",
+        html = "algodehtml",
         created_at=datetime.utcnow() - timedelta(days=1),
     )
     art2 = Article(
         tweet_id = 19191,
         text = "This is a tweet",
         title = "My title",
+        url = "http://clarin.com/url",
+        html = "algodehtml",
         body = "This is a detailed explanation of the news",
         created_at=datetime.utcnow() - timedelta(days=1),
     )

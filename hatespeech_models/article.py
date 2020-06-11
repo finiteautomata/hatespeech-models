@@ -33,6 +33,8 @@ class Article(DynamicDocument):
     text = StringField(required=True, max_length=500)
     slug = StringField(required=True, max_length=60, unique=True)
     title = StringField(required=True, max_length=200)
+    url = StringField(required=True)
+    html = StringField(required=True)
     user = StringField(max_length=40)
     body = StringField(required=True)
     created_at = DateTimeField(required=True)
@@ -47,8 +49,9 @@ class Article(DynamicDocument):
             text=tweet["text"],
             title=tweet["article"]["title"],
             body=tweet["article"]["body"],
+            html=tweet["article"]["html"],
+            url=tweet["article"]["url"],
         )
-
         article.comments = []
 
         for reply in tweet["replies"]:
