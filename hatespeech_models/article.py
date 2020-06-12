@@ -32,7 +32,7 @@ class Comment(EmbeddedDocument):
 class Article(DynamicDocument):
     tweet_id = LongField(required=True, unique=True)
     text = StringField(required=True, max_length=500)
-    slug = StringField(required=True, max_length=60, unique=True)
+    slug = StringField(required=True, max_length=100, unique=True)
     title = StringField(required=True, max_length=200)
     url = StringField(required=True)
     html = StringField(required=True)
@@ -84,6 +84,7 @@ Tweet:
         'indexes': [
             "comments.tweet_id",
             "created_at",
+            "tweet_id"
             "slug",
             "user",
             {
@@ -95,27 +96,8 @@ Tweet:
 
 
 def article_slugify(article):
-    article_slug = slugify(article.title)[:50]
-    original_slug = article_slug
-
-    try:
-        another_article = Article.objects.get(slug=article_slug)
-
-        count = 2
-        article_slug = f"{original_slug}_{count}"
-
-        while True:
-            """
-            Repeat until fails
-            """
-            another_article = Article.objects.get(slug=article_slug)
-            count += 1
-            article_slug = f"{original_slug}_{count}"
-
-    except DoesNotExist:
-        # It is ok
-        return article_slug
-
+    article_slug = slugify(article.title)[:70]
+    return f"{article_slug}_{article.tweet_id}"
 
 def set_slug(sender, document):
     document.slug = article_slugify(document)
