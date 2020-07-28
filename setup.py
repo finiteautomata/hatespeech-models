@@ -6,7 +6,7 @@ setup(
     packages=find_packages(),
     test_suite="tests",
     install_requires=[
-        "mongoengine"
+        "mongoengine",
         "python-slugify>4.0.0"
     ]
 )
