@@ -35,6 +35,7 @@ class Article(DynamicDocument):
     slug = StringField(required=True, max_length=100, unique=True)
     title = StringField(required=True, max_length=200)
     url = StringField(required=True)
+    dummy = BooleanField(required=True, default=False)
     html = StringField(required=True)
     user = StringField(max_length=40)
     body = StringField(required=True)
