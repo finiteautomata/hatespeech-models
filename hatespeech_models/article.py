@@ -30,7 +30,7 @@ class Comment(EmbeddedDocument):
         return ret
 
 class Article(DynamicDocument):
-    tweet_id = LongField(required=True, unique=True)
+    tweet_id = LongField(required=True)
     text = StringField(required=True, max_length=500)
     slug = StringField(required=True, max_length=100, unique=True)
     title = StringField(required=True, max_length=200)
@@ -97,7 +97,9 @@ Tweet:
 
 def article_slugify(article):
     article_slug = slugify(article.title)[:70]
-    return f"{article_slug}_{article.tweet_id}"
+    article_slug = f"{article_slug}_{article.id}"
+
+    return article_slug[:100]
 
 def set_slug(sender, document):
     document.slug = article_slugify(document)
