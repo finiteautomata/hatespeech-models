@@ -32,11 +32,11 @@ class Comment(EmbeddedDocument):
 class Article(DynamicDocument):
     tweet_id = LongField(required=True)
     text = StringField(required=True, max_length=500)
-    slug = StringField(required=True, max_length=100, unique=True)
+    slug = StringField(required=True, max_length=130, unique=True)
     title = StringField(required=True, max_length=200)
     url = StringField(required=True)
     dummy = BooleanField(required=True, default=False)
-    html = StringField(required=True)
+    html = StringField()
     user = StringField(max_length=40)
     body = StringField(required=True)
     created_at = DateTimeField(required=True)
@@ -97,10 +97,13 @@ Tweet:
 
 
 def article_slugify(article):
-    article_slug = slugify(article.title)[:70]
-    article_slug = f"{article_slug}_{article.id}"
+    now = datetime.datetime.now()
 
-    return article_slug[:100]
+    article_slug = slugify(article.title)[:70]
+
+    article_slug = f"{article_slug}_{article.tweet_id}_{now.microsecond}"
+
+    return article_slug[:130]
 
 def set_slug(sender, document):
     document.slug = article_slugify(document)
