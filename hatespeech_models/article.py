@@ -85,7 +85,6 @@ Tweet:
         'indexes': [
             "comments.tweet_id",
             "created_at",
-            "tweet_id"
             "slug",
             "user",
             {
