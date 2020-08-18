@@ -70,13 +70,8 @@ class Article(DynamicDocument):
         return article
 
     def __repr__(self):
-        return f"""{self.tweet_id} - {self.user}
-{self.title}
-
-({len(self.comments)} comentarios)
-Tweet:
-{self.text}
-    """
+        return f"""{self.tweet_id} - {self.user} ({len(self.comments)} comentarios)
+{self.title}"""
 
     def __str__(self):
         return self.__repr__()
