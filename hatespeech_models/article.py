@@ -35,12 +35,18 @@ class Article(DynamicDocument):
     slug = StringField(required=True, max_length=130, unique=True)
     title = StringField(required=True, max_length=200)
     url = StringField(required=True)
-    dummy = BooleanField(required=True, default=False)
+
     html = StringField()
     user = StringField(max_length=40)
     body = StringField(required=True)
     created_at = DateTimeField(required=True)
     comments = ListField(EmbeddedDocumentField(Comment))
+
+    """
+    These are internal fields for annotation use
+    """
+    dummy = BooleanField(required=True, default=False)
+    description = StringField()
 
     @classmethod
     def from_tweet(cls, tweet):
