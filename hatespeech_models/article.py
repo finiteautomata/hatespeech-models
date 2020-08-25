@@ -106,6 +106,8 @@ def article_slugify(article):
     return article_slug[:130]
 
 def set_slug(sender, document):
+    if document.slug:
+        return
     document.slug = article_slugify(document)
 
 signals.pre_save.connect(set_slug, sender=Article)
