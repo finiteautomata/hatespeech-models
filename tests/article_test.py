@@ -193,6 +193,38 @@ def test_is_interested_after_setting_so():
 
     assert art.is_insteresting_to("foo")
 
+def test_is_interesting_is_idempotent():
+    art = Article(
+        tweet_id = 123,
+        text = "This is a tweet",
+        title = "This is a unique title",
+        body = "This is a detailed explanation of the news",
+        url = "http://clarin.com/url",
+        html = "algodehtml",
+        created_at=datetime.utcnow() - timedelta(days=1),
+    )
+
+    art.set_as_interesting_to("foo")
+    art.set_as_interesting_to("foo")
+
+    assert art.interesting_to == ["foo"] and art.seen_by == ["foo"]
+
+def test_seen_by_is_idempotent():
+    art = Article(
+        tweet_id = 123,
+        text = "This is a tweet",
+        title = "This is a unique title",
+        body = "This is a detailed explanation of the news",
+        url = "http://clarin.com/url",
+        html = "algodehtml",
+        created_at=datetime.utcnow() - timedelta(days=1),
+    )
+
+    art.set_as_seen_by("foo")
+    art.set_as_seen_by("foo")
+
+    assert art.seen_by == ["foo"]
+
 
 
 
