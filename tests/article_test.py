@@ -176,7 +176,7 @@ def test_not_interesting_if_only_seen():
 
     art.set_as_seen_by("foo")
 
-    assert not art.is_insteresting_to("foo")
+    assert not art.is_interesting_to("foo")
 
 def test_is_interested_after_setting_so():
     art = Article(
@@ -190,8 +190,7 @@ def test_is_interested_after_setting_so():
     )
 
     art.set_as_interesting_to("foo")
-
-    assert art.is_insteresting_to("foo")
+    assert art.is_interesting_to("foo")
 
 def test_is_interesting_is_idempotent():
     art = Article(
@@ -225,8 +224,36 @@ def test_seen_by_is_idempotent():
 
     assert art.seen_by == ["foo"]
 
+def test_set_as_not_interesting_to():
+    art = Article(
+        tweet_id = 123,
+        text = "This is a tweet",
+        title = "This is a unique title",
+        body = "This is a detailed explanation of the news",
+        url = "http://clarin.com/url",
+        html = "algodehtml",
+        created_at=datetime.utcnow() - timedelta(days=1),
+    )
 
+    art.set_as_not_interesting_to("foo")
 
+    assert art.seen_by == ["foo"]
+    assert not art.is_interesting_to("foo")
+
+def test_remove_interest():
+    art = Article(
+        tweet_id = 123,
+        text = "This is a tweet",
+        title = "This is a unique title",
+        body = "This is a detailed explanation of the news",
+        url = "http://clarin.com/url",
+        html = "algodehtml",
+        created_at=datetime.utcnow() - timedelta(days=1),
+    )
+    art.set_as_interesting_to("foo")
+    art.set_as_not_interesting_to("foo")
+
+    assert art.has_been_seen_by("foo") and not art.is_interesting_to("foo")
 
 def test_create_article_with_differents_slug():
     art1 = Article(

@@ -94,7 +94,14 @@ class Article(DynamicDocument):
             self.interesting_to.append(username)
             self.save()
 
-    def is_insteresting_to(self, username):
+    def set_as_not_interesting_to(self, username):
+        self.set_as_seen_by(username)
+
+        if username in self.interesting_to:
+            self.interesting_to.remove(username)
+            self.save()
+
+    def is_interesting_to(self, username):
         return username in self.interesting_to
 
     def __repr__(self):
