@@ -48,6 +48,10 @@ class Article(DynamicDocument):
     dummy = BooleanField(required=True, default=False)
     description = StringField()
 
+    seen_by = ListField(StringField())
+    interesting_to = ListField(StringField())
+
+
     @classmethod
     def from_tweet(cls, tweet):
         article = cls(
@@ -75,12 +79,31 @@ class Article(DynamicDocument):
 
         return article
 
+    def has_been_seen_by(self, username):
+        return username in self.seen_by
+
+    def set_as_seen_by(self, username):
+        if username not in self.seen_by:
+            self.seen_by.append(username)
+            self.save()
+
+    def set_as_interesting_to(self, username):
+        self.set_as_seen_by(username)
+
+        if username not in self.interesting_to:
+            self.interesting_to.append(username)
+            self.save()
+
+    def is_insteresting_to(self, username):
+        return username in self.interesting_to
+
     def __repr__(self):
         return f"""{self.tweet_id} - {self.user} ({len(self.comments)} comentarios)
 {self.title}"""
 
     def __str__(self):
         return self.__repr__()
+
 
     meta = {
         'indexes': [
@@ -94,6 +117,10 @@ class Article(DynamicDocument):
             },
         ]
     }
+
+
+
+
 
 
 def article_slugify(article):
