@@ -104,6 +104,10 @@ class Article(DynamicDocument):
     def is_interesting_to(self, username):
         return username in self.interesting_to
 
+    @classmethod
+    def next_articles_to_be_labelled(self, username):
+        return Article.objects(seen_by__1__exists=False, seen_by__ne=username)
+
     def __repr__(self):
         return f"""{self.tweet_id} - {self.user} ({len(self.comments)} comentarios)
 {self.title}"""
