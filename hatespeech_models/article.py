@@ -49,6 +49,7 @@ class Article(DynamicDocument):
     created_at = DateTimeField(required=True)
     comments = ListField(EmbeddedDocumentField(Comment))
 
+    selected = BooleanField()
     """
     These are internal fields for annotation use
     """
@@ -104,6 +105,7 @@ class Article(DynamicDocument):
             "comments.tweet_id",
             "created_at",
             "slug",
+            "selected",
             "user",
             {
                 'fields': ['$body', '$title'],
