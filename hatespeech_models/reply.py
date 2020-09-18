@@ -1,17 +1,12 @@
-import datetime
 from mongoengine import (
     DynamicDocument,
     StringField,
-    ListField,
     DateTimeField,
     LongField,
-    BooleanField,
-    EmbeddedDocumentField,
     FloatField,
     ReferenceField,
-    signals,
 )
-from . import Article
+from .article import Article
 
 
 class Reply(DynamicDocument):

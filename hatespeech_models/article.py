@@ -2,7 +2,6 @@ import datetime
 from mongoengine import (
     DynamicDocument,
     EmbeddedDocument,
-    DoesNotExist,
     StringField,
     ListField,
     DateTimeField,
@@ -14,8 +13,10 @@ from mongoengine import (
 )
 from slugify import slugify
 
-
 class Comment(EmbeddedDocument):
+    """
+    Embedded class representing a comment
+    """
     tweet_id = LongField(required=True)
     text = StringField(required=True)
     user_id = LongField(required=True)
@@ -23,6 +24,9 @@ class Comment(EmbeddedDocument):
     hateful_value = FloatField(min_value=0.0, max_value=1.0)
 
     def __repr__(self):
+        """
+        Representation string
+        """
         ret = ""
         if self.hateful_value:
             ret += f"({self.hateful_value:.2f}) "
@@ -30,6 +34,9 @@ class Comment(EmbeddedDocument):
         return ret
 
 class Article(DynamicDocument):
+    """
+    Class representing an article and its comments
+    """
     tweet_id = LongField(required=True)
     text = StringField(required=True, max_length=500)
     slug = StringField(required=True, max_length=130, unique=True)
@@ -48,12 +55,11 @@ class Article(DynamicDocument):
     dummy = BooleanField(required=True, default=False)
     description = StringField()
 
-    seen_by = ListField(StringField())
-    interesting_to = ListField(StringField())
-
-
     @classmethod
     def from_tweet(cls, tweet):
+        """
+        Convenient method to create article and comments from JSON
+        """
         article = cls(
             tweet_id=tweet["_id"],
             created_at=tweet["created_at"],
@@ -72,47 +78,24 @@ class Article(DynamicDocument):
                 text=reply["text"],
                 user_id=reply["user"]["id"],
                 created_at=reply["created_at"],
+                retweet_count = reply["retweet_count"]
             )
-
-            comment.retweet_count = reply["retweet_count"]
             article.comments.append(comment)
 
         return article
 
-    def has_been_seen_by(self, username):
-        return username in self.seen_by
-
-    def set_as_seen_by(self, username):
-        if username not in self.seen_by:
-            self.seen_by.append(username)
-            self.save()
-
-    def set_as_interesting_to(self, username):
-        self.set_as_seen_by(username)
-
-        if username not in self.interesting_to:
-            self.interesting_to.append(username)
-            self.save()
-
-    def set_as_not_interesting_to(self, username):
-        self.set_as_seen_by(username)
-
-        if username in self.interesting_to:
-            self.interesting_to.remove(username)
-            self.save()
-
-    def is_interesting_to(self, username):
-        return username in self.interesting_to
-
-    @classmethod
-    def next_articles_to_be_labelled(self, username):
-        return Article.objects(seen_by__1__exists=False, seen_by__ne=username)
 
     def __repr__(self):
+        """
+        Object representation
+        """
         return f"""{self.tweet_id} - {self.user} ({len(self.comments)} comentarios)
 {self.title}"""
 
     def __str__(self):
+        """
+        String representation
+        """
         return self.__repr__()
 
 
@@ -130,11 +113,10 @@ class Article(DynamicDocument):
     }
 
 
-
-
-
-
 def article_slugify(article):
+    """
+    Slugify article
+    """
     now = datetime.datetime.now()
 
     article_slug = slugify(article.title)[:70]
@@ -143,7 +125,10 @@ def article_slugify(article):
 
     return article_slug[:130]
 
-def set_slug(sender, document):
+def set_slug(_, document):
+    """
+    Set slug pre-save
+    """
     if document.slug:
         return
     document.slug = article_slugify(document)
