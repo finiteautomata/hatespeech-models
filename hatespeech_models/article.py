@@ -56,6 +56,11 @@ class Article(DynamicDocument):
     dummy = BooleanField(required=True, default=False)
     description = StringField()
 
+    """
+    We use this field for the text index
+    """
+    first_paragraphs = StringField()
+
     @classmethod
     def from_tweet(cls, tweet):
         """
@@ -108,7 +113,7 @@ class Article(DynamicDocument):
             "selected",
             "user",
             {
-                'fields': ['$body', '$title'],
+                'fields': ['$first_paragraphs', '$title'],
                 'default_language': 'spanish',
             },
         ]
@@ -135,4 +140,23 @@ def set_slug(_, document):
         return
     document.slug = article_slugify(document)
 
+def set_first_paragraphs(_, document):
+    """
+    Set first paragraph
+    """
+    if document.first_paragraphs:
+        return
+
+    # How many paragraphs to take
+    num = 2
+    paragraphs = document.body.split("\n")
+    paragraphs = [
+        p for p in paragraphs if len(p) > 5 and not "comentar" in p.lower()[:100]
+    ]
+    # If first is title, skip
+    if paragraphs and len(paragraphs[0]) <= 140:
+        num += 1
+    document.first_paragraphs = "\n\n".join(paragraphs[:num])
+
+signals.pre_save.connect(set_first_paragraphs, sender=Article)
 signals.pre_save.connect(set_slug, sender=Article)
