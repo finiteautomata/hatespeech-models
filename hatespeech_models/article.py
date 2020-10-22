@@ -87,6 +87,7 @@ Tweet:
             "tweet_id"
             "slug",
             "user",
+            "title",
             {
                 'fields': ['$body', '$title'],
                 'default_language': 'spanish',
