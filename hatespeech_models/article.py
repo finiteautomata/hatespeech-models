@@ -112,6 +112,7 @@ class Article(DynamicDocument):
             "slug",
             "selected",
             "user",
+            "title",
             {
                 'fields': ['$first_paragraphs', '$title'],
                 'default_language': 'spanish',
