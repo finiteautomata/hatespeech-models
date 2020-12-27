@@ -7,6 +7,7 @@ from mongoengine import (
     DateTimeField,
     LongField,
     BooleanField,
+    IntField,
     EmbeddedDocumentField,
     FloatField,
     signals,
@@ -55,6 +56,7 @@ class Article(DynamicDocument):
     """
     dummy = BooleanField(required=True, default=False)
     description = StringField()
+    votes = IntField(null=True)
 
     """
     We use this field for the text index
