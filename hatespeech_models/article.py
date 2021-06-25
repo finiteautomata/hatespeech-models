@@ -33,26 +33,32 @@ class Article(DynamicDocument):
     tweet_id = LongField(required=True, unique=True)
     text = StringField(required=True, max_length=500)
     slug = StringField(required=True, max_length=100, unique=True)
-    title = StringField(required=True, max_length=200)
-    url = StringField(required=True)
-    html = StringField(required=True)
     user = StringField(max_length=40)
-    body = StringField(required=True)
+
+    title = StringField(required=False, max_length=200)
+    body = StringField(required=False)
+    html = StringField(required=False)
+    url = StringField(required=False)
     created_at = DateTimeField(required=True)
     comments = ListField(EmbeddedDocumentField(Comment))
 
     @classmethod
     def from_tweet(cls, tweet):
-        article = cls(
-            tweet_id=tweet["_id"],
-            created_at=tweet["created_at"],
-            user=tweet["user"]["screen_name"],
-            text=tweet["text"],
-            title=tweet["article"]["title"],
-            body=tweet["article"]["body"],
-            html=tweet["article"]["html"],
-            url=tweet["article"]["url"],
-        )
+        args = {
+            "tweet_id": tweet["_id"],
+            "created_at": tweet["created_at"],
+            "user": tweet["user"]["screen_name"],
+            "text": tweet["text"],
+        }
+        if tweet.get("article", None):
+            args.update({
+                "title": tweet["article"]["title"],
+                "body": tweet["article"]["body"],
+                "html": tweet["article"]["html"],
+                "url": tweet["article"]["url"],
+            })
+
+        article = cls(**args)
         article.comments = []
 
         for reply in tweet["replies"]:
@@ -97,7 +103,10 @@ Tweet:
 
 
 def article_slugify(article):
-    article_slug = slugify(article.title)[:70]
+    if article.title:
+        article_slug = slugify(article.title)[:70]
+    else:
+        article_slug = slugify(article.text)[:70]
     return f"{article_slug}_{article.tweet_id}"
 
 def set_slug(sender, document):
